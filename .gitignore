@@ -1,0 +1,16 @@
+# Dependency directories
+node_modules/
+
+# dotenv environment variables file
+.env
+
+# dev environment
+nodemon.json
+
+# ecosystem file
+ecosystem.json
+ecosystem-test.json
+ecosystem-test-multi.json
+
+# ignore compiled code
+dist/
