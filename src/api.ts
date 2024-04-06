@@ -1,8 +1,8 @@
 import express from 'express';
 import { validator } from './tools/validator';
 import { User, Event, Coupon } from './types/datastore';
-import { randomRecommend } from './tools/recommender';
-import { FileStore } from './datastore/fileStore';
+import { frequencyRecommend } from './tools/recommender';
+import { FileStore } from './datastore/filestore';
 
 const app = express();
 app.use(express.json());
@@ -51,9 +51,16 @@ app.post('/coupon', (req, res) => {
 });
 
 app.get('/user/:user_id', (req, res) => {
-    const reccommendations = randomRecommend();
+    const user = fileStore.getUserById(req.params.user_id);
 
-    res.send(reccommendations);
+    if (!user) {
+        res.status(404).send('User not found');
+        return;
+    }
+
+    const recommendations = frequencyRecommend(req.params.user_id, fileStore);
+
+    res.send(recommendations);
 });
 
 // Start the server

@@ -1,4 +1,7 @@
+
+import { FileStore } from '../datastore/filestore';
 import { Event } from '../types/datastore';
+import { mostFrequent } from './utils';
 
 export function randomRecommend(): Event[] {    
     return [
@@ -21,4 +24,29 @@ export function randomRecommend(): Event[] {
             country: 'US'
         }
     ];
+}
+
+export function frequencyRecommend(user_id: string, filestore: FileStore): Event[] {
+    const userCoupons = filestore.getUserCoupons(user_id).sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()).slice(0, 10);
+
+    const user_events_id= userCoupons.map(coupon => coupon.selections[0].event_id);
+
+    const user_events_details = user_events_id.map(eventId => filestore.getEventById(eventId));
+    
+    const sports = user_events_details.map(event => event.sport);
+
+    const leagues = user_events_details.map(event => event.league);
+
+    const mostFrequentSport = mostFrequent(sports);
+
+    const mostFrequentLeague = mostFrequent(leagues);
+
+    //Get the events that match the most frequent sport and league that the user hasn't selected
+    const recommendedEvents = filestore.getEvents().filter(event => event.sport === mostFrequentSport && event.league === mostFrequentLeague && !user_events_id.includes(event.event_id));
+
+    if (recommendedEvents.length === 0) {
+        return randomRecommend();
+    }
+    
+    return recommendedEvents;
 }

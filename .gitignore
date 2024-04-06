@@ -14,3 +14,6 @@ ecosystem-test-multi.json
 
 # ignore compiled code
 dist/
+
+# ignore datafiles
+data.*
