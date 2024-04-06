@@ -59,19 +59,36 @@ export class FileStore {
         return this.coupons.filter((coupon) => coupon.selections.some((selection) => selection.event_id === eventId));
     }
 
-    public insertUser(user: User): void {
+    public insertUser(user: User): boolean {
+        if (this.getUserById(user.user_id)) {
+            return false;
+        }
+
         this.users.push(user);
         this.save();
+        return true;
     }
 
-    public insertEvent(event: Event): void {
+    public insertEvent(event: Event): boolean {
+        if (this.getEventById(event.event_id)) {
+            return false;
+        }
+
         this.events.push(event);
         this.save();
+
+        return true;
     }
 
-    public insertCoupon(coupon: Coupon): void {
+    public insertCoupon(coupon: Coupon): boolean {
+        if (this.getCouponById(coupon.coupon_id)) {
+            return false;
+        }
+
         this.coupons.push(coupon);
         this.save();
+        
+        return true;
     }
 
     public save(): void {

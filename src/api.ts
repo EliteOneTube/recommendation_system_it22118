@@ -19,7 +19,12 @@ app.post('/user', (req, res) => {
         return;
     }
 
-    fileStore.insertUser(req.body as User);
+    const inserted = fileStore.insertUser(req.body as User);
+
+    if (!inserted) {
+        res.status(409).send('User already exists');
+        return;
+    }
 
     res.send('POST request received at /user');
 });
@@ -32,7 +37,12 @@ app.post('/event', (req, res) => {
         return;
     }
 
-    fileStore.insertEvent(req.body as Event);
+    const inserted = fileStore.insertEvent(req.body as Event);
+
+    if (!inserted) {
+        res.status(409).send('Event already exists');
+        return;
+    }
 
     res.send('POST request received at /event');
 });
@@ -45,7 +55,12 @@ app.post('/coupon', (req, res) => {
         return;
     }
 
-    fileStore.insertCoupon(req.body as Coupon);
+    const inserted = fileStore.insertCoupon(req.body as Coupon);
+
+    if (!inserted) {
+        res.status(409).send('Coupon already exists');
+        return;
+    }
 
     res.send('POST request received at /coupon');
 });

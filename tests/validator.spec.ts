@@ -1,10 +1,10 @@
 // Import the validator function and test it
 import { validator } from '../src/tools/validator';
 import { User, Event, Coupon } from '../src/types/datastore';
-import { describe, expect, test } from '@jest/globals';
+import { describe, expect, it } from '@jest/globals';
 
 describe('Validator', () => {
-  test('Should validate a valid User', () => {
+  it('Should validate a valid User', () => {
     const user: User = {
       birth_year: '1990',
       country: 'US',
@@ -18,7 +18,7 @@ describe('Validator', () => {
     expect(validated.valid).toBe(true);
   });
 
-  test('Should validate an invalid User', () => {
+  it('Should validate an invalid User', () => {
     const user = {
       birth_year: '1990',
       country: 'US',
@@ -33,7 +33,7 @@ describe('Validator', () => {
     expect(validated.valid).toBe(false);
   });
 
-  test('Should validate a valid Event', () => {
+  it('Should validate a valid Event', () => {
     const event: Event = {
       begin_timestamp: '2021-01-01T00:00:00Z',
       country: 'US',
@@ -48,7 +48,7 @@ describe('Validator', () => {
     expect(validated.valid).toBe(true);
   });
 
-  test('Should validate an invalid Event', () => {
+  it('Should validate an invalid Event', () => {
     const event = {
       begin_timestamp: '2021-01-01T00:00:00Z',
       country: 'US',
@@ -64,7 +64,7 @@ describe('Validator', () => {
     expect(validated.valid).toBe(false);
   });
 
-  test('Should validate a valid Coupon', () => {
+  it('Should validate a valid Coupon', () => {
     const coupon: Coupon = {
       coupon_id: '1234',
       selections: [
@@ -82,7 +82,7 @@ describe('Validator', () => {
     expect(validated.valid).toBe(true);
   });
 
-  test('Should validate an invalid Coupon', () => {
+  it('Should validate an invalid Coupon', () => {
     const coupon = {
       coupon_id: '1234',
       selections: [
