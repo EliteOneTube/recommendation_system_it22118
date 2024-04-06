@@ -1,9 +1,15 @@
 import express from 'express';
-import { validator } from './utils';
-import { User, Event, Coupon } from './types/database';
+import { validator } from './tools/validator';
+import { User, Event, Coupon } from './types/datastore';
+import { randomRecommend } from './tools/recommender';
+import { FileStore } from './datastore/fileStore';
 
 const app = express();
 app.use(express.json());
+
+const fileStore = new FileStore();
+
+fileStore.initialize('./data.json');
 
 app.post('/user', (req, res) => {
     const validated = validator('user', req.body as User);
@@ -12,6 +18,8 @@ app.post('/user', (req, res) => {
         res.status(400).send(validated.errors);
         return;
     }
+
+    fileStore.insertUser(req.body as User);
 
     res.send('POST request received at /user');
 });
@@ -24,6 +32,8 @@ app.post('/event', (req, res) => {
         return;
     }
 
+    fileStore.insertEvent(req.body as Event);
+
     res.send('POST request received at /event');
 });
 
@@ -35,13 +45,15 @@ app.post('/coupon', (req, res) => {
         return;
     }
 
+    fileStore.insertCoupon(req.body as Coupon);
+
     res.send('POST request received at /coupon');
 });
 
-// GET endpoint
 app.get('/user/:user_id', (req, res) => {
-    // Handle the request and send a response
-    res.send('GET request received at /endpoint');
+    const reccommendations = randomRecommend();
+
+    res.send(reccommendations);
 });
 
 // Start the server

@@ -3,7 +3,7 @@ export interface User {
     country: string;
     currency: string;
     gender: string;
-    regisration_date: string;
+    registration_date: string;
     user_id: string;
 }
 
@@ -28,4 +28,10 @@ export interface Coupon {
 export interface Selection {
     event_id: string;
     odds: number;
+}
+
+export interface Data {
+    users: User[];
+    events: Event[];
+    coupons: Coupon[];
 }
