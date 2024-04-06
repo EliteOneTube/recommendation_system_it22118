@@ -17,3 +17,4 @@ dist/
 
 # ignore datafiles
 data.*
+test.*
