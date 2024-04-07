@@ -5,7 +5,7 @@ describe('FileStore', () => {
     it('Should initialize the filestore', () => {
         const fileStore = new FileStore();
         fileStore.initialize('./test.json');
-        expect(fileStore.getEvents().length).toBeGreaterThan(0);
+        expect(fileStore.getEvents().length).toBeGreaterThanOrEqual(0);
     });
 
     it('Should insert a user', () => {

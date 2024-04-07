@@ -51,7 +51,7 @@ const generateCoupon = (userIds: string[], eventIds: string[]): Coupon => {
 };
 
 // Generate dummy data
-const generateDummyData = (numUsers: number, numEvents: number, numCoupons: number) => {
+export const generateDummyData = (numUsers: number, numEvents: number, numCoupons: number) => {
     const users: User[] = [];
     const events: Event[] = [];
     const coupons: Coupon[] = [];

@@ -94,4 +94,18 @@ export class FileStore {
     public save(): void {
         fs.writeFileSync(this.path, JSON.stringify({ users: this.users, events: this.events, coupons: this.coupons }));
     }
+
+    public writeData(data: Data): void {
+        fs.writeFileSync(this.path, JSON.stringify(data));
+
+        for (const key in data) {
+            if (key === "users") {
+                this.users = data.users;
+            } else if (key === "events") {
+                this.events = data.events;
+            } else if (key === "coupons") {
+                this.coupons = data.coupons;
+            }
+        }
+    }
 }
