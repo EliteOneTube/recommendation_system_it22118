@@ -4,7 +4,8 @@
   "main": "index.js",
   "scripts": {
     "dev": "npx nodemon src/api.ts",
-    "test": "jest --watchAll --no-cache"
+    "test": "jest --watchAll --no-cache",
+    "generate": "npx tsx generator/generate.ts"
   },
   "author": "",
   "license": "ISC",
@@ -23,12 +24,14 @@
     "supertest": "^6.3.4",
     "ts-jest": "^29.1.2",
     "ts-node": "^10.9.2",
+    "tsx": "^4.7.2",
     "typescript": "^5.4.4",
     "typescript-eslint": "^7.5.0"
   },
   "dependencies": {
     "express": "^4.19.2",
     "fs": "^0.0.1-security",
+    "install": "^0.13.0",
     "jsonschema": "^1.4.1"
   }
 }

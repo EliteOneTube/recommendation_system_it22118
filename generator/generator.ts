@@ -2,6 +2,13 @@ import { faker } from '@faker-js/faker';
 import { User, Event, Coupon, Selection } from '../src/types/datastore';
 import * as fs from "fs";
 
+const leagues = {
+    "Football": ["NFL", "NCAA", "CFL", "AFL"],
+    "Basketball": ["NBA", "NCAA", "WNBA"],
+    "Tennis": ["ATP", "WTA"],
+    "Hockey": ["NHL", "AHL"]
+}
+
 // Function to generate a random user
 const generateUser = (): User => {
     return {
@@ -16,14 +23,18 @@ const generateUser = (): User => {
 
 // Function to generate a random event
 const generateEvent = (): Event => {
+    const sport = faker.helpers.arrayElement(Object.keys(leagues));
+
+    const league: string = faker.helpers.arrayElement(leagues[sport] as string[]);
+
     return {
         begin_timestamp: faker.date.future().toISOString(),
         country: faker.location.country(),
         end_timestamp: faker.date.future().toISOString(),
         event_id: faker.string.uuid(),
-        league: faker.helpers.arrayElement(['NFL', 'NBA', 'MLB', 'NHL']),
+        league: league,
         participants: [faker.lorem.word(), faker.lorem.word()],
-        sport: faker.helpers.arrayElement(['Football', 'Basketball', 'Tennis', 'Hockey'])
+        sport: sport
     };
 };
 

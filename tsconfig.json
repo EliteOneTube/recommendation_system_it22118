@@ -2,7 +2,7 @@
     "compilerOptions": {
         "baseUrl": ".",
         "target": "esnext",
-        "module": "CommonJS",
+        "module": "nodenext",
         "moduleResolution": "Node",
         "allowJs": false,
         "checkJs": false,
