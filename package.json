@@ -4,7 +4,7 @@
   "main": "index.js",
   "scripts": {
     "dev": "npx nodemon src/api.ts",
-    "test": "jest --watchAll --no-cache",
+    "test": "npx jest --watchAll --no-cache",
     "generate": "npx tsx generator/generate.ts"
   },
   "author": "",

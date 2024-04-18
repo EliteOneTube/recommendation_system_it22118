@@ -4,11 +4,6 @@ import { FileStore } from '../src/datastore/filestore';
 import {generateDummyData} from '../generator/generator';
 import { User } from '../src/types/datastore';
 
-beforeEach(() => {
-    const filestore = new FileStore();
-    filestore.initialize('./test1.json'); // Initialize with a test
-});
-
 describe('Random Recommender', () => {
     it('Should return a list of recommendations', () => {
         const recommendations = randomRecommend();

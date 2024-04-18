@@ -1,7 +1,8 @@
 import { User, Event, Coupon, Data } from "src/types/datastore";
 import * as fs from "fs";
+import { Store } from "./store";
 
-export class FileStore {
+export class FileStore extends Store {
     private users: User[];
     private events: Event[];
     private coupons: Coupon[];
