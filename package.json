@@ -5,7 +5,8 @@
   "scripts": {
     "dev": "npx nodemon src/api.ts",
     "test": "npx jest --watchAll --no-cache",
-    "generate": "npx tsx generator/generate.ts"
+    "generate": "npx tsx generator/generate.ts",
+    "build": "tsc"
   },
   "author": "",
   "license": "ISC",

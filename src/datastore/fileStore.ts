@@ -12,7 +12,7 @@ export class FileStore extends Store {
         this.path = path;
 
         if (!fs.existsSync(this.path)) {
-            fs.writeFileSync(this.path, JSON.stringify({ users: [], events: [], coupons: [] }));
+            fs.writeFileSync(this.path, JSON.stringify({ users: [], events: [], coupons: [] }), {mode: 0o666});
         }
 
         const fileData = fs.readFileSync(this.path, "utf8");
