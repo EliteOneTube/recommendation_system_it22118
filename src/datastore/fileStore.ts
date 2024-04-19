@@ -1,4 +1,4 @@
-import { User, Event, Coupon, Data } from "src/types/datastore";
+import { User, Event, Coupon, Data } from "../types/datastore";
 import * as fs from "fs";
 import { Store } from "./store";
 

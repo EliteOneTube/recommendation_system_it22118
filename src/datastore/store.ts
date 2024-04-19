@@ -1,4 +1,4 @@
-import { Coupon, User, Event } from "src/types/datastore";
+import { Coupon, User, Event } from "../types/datastore";
 
 export abstract class Store {
     public abstract initialize(path: string): void;

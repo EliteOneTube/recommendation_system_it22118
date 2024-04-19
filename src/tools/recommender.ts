@@ -1,5 +1,5 @@
-import { FileStore } from 'src/datastore/filestore';
-import { Event } from 'src/types/datastore';
+import { FileStore } from '../datastore/filestore';
+import { Event } from '../types/datastore';
 import { getAllEventIds, mostFrequent } from './utils';
 
 export function randomRecommend(): Event[] {    
