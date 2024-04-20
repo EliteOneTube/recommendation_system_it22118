@@ -58,4 +58,4 @@ COPY --from=build /usr/src/app/dist ./dist
 EXPOSE 3000
 
 # Run the application.
-CMD node dist/api.js
+CMD node dist/app.js

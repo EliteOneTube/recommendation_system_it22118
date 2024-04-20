@@ -1,9 +1,9 @@
 import jsonschema, {ValidatorResult} from 'jsonschema';
-import { userSchema } from 'src/schemas/user';
-import { eventSchema } from 'src/schemas/event';
-import { couponSchema } from 'src/schemas/coupon';
+import { userSchema } from '../schemas/user';
+import { eventSchema } from '../schemas/event';
+import { couponSchema } from '../schemas/coupon';
 
-import { User, Event, Coupon } from 'src/types/datastore';
+import { User, Event, Coupon } from '../types/datastore';
 
 export function validator(schema: string, data: User | Event | Coupon): ValidatorResult {
     const Validator = jsonschema.Validator;

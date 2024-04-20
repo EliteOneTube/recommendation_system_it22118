@@ -31,7 +31,7 @@ describe('Frequency Recommender', () => {
         }
         const users = filestore.getUsers()
 
-        const randomUser = users[0] as User;
+        const randomUser = users[0];
 
         const recommendations = frequencyRecommend(randomUser.user_id, filestore);
         expect(recommendations.length).toBeGreaterThan(0);

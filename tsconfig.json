@@ -2,8 +2,7 @@
     "compilerOptions": {
         "baseUrl": ".",
         "target": "esnext",
-        "module": "nodenext",
-        "moduleResolution": "NodeNext",
+        "module": "CommonJS",
         "allowJs": false,
         "checkJs": false,
         "outDir": "./dist",
@@ -17,7 +16,7 @@
         "esModuleInterop": true,
         "sourceMap": false,
         "forceConsistentCasingInFileNames": true,
-        "skipLibCheck": true,
+        "skipLibCheck": true
     },
     "exclude": ["./node_modules", "**/__tests__/*", "tests"],
     "include": ["src",]

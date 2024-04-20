@@ -1,9 +1,9 @@
 {
   "name": "recommendation_system_it22118",
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "app.js",
   "scripts": {
-    "dev": "npx nodemon src/api.ts",
+    "dev": "npx nodemon src/app.ts",
     "test": "npx jest --watchAll --no-cache",
     "generate": "npx tsx generator/generate.ts",
     "build": "tsc"
@@ -33,6 +33,7 @@
     "express": "^4.19.2",
     "fs": "^0.0.1-security",
     "install": "^0.13.0",
-    "jsonschema": "^1.4.1"
+    "jsonschema": "^1.4.1",
+    "kafkajs": "^2.2.4"
   }
 }

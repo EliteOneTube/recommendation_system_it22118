@@ -1,4 +1,4 @@
-import { Coupon } from "src/types/datastore";
+import { Coupon } from "../types/datastore";
 
 export function mostFrequent<T>(arr: T[]): T {
     return arr.sort((a, b) =>
