@@ -7,6 +7,7 @@ FROM node:${NODE_VERSION}-alpine as base
 # Set working directory for all build stages.
 WORKDIR /usr/src/app
 
+RUN npm install -g npm@10.5.2
 
 ################################################################################
 # Create a stage for installing production dependecies.
@@ -34,10 +35,6 @@ RUN --mount=type=bind,source=package.json,target=package.json \
 
 # Copy the rest of the source files into the image.
 COPY . .
-
-RUN ls -la ./src
-
-RUN ls -la ./src/datastore
 
 # Run the build script.
 RUN npm run build --verbose
