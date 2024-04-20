@@ -40,7 +40,7 @@ RUN ls -la ./src
 RUN ls -la ./src/datastore
 
 # Run the build script.
-RUN npm run build
+RUN npm run build --verbose
 
 ################################################################################
 # Create a new stage to run the application with minimal runtime dependencies
