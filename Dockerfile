@@ -7,8 +7,6 @@ FROM node:${NODE_VERSION}-alpine as base
 # Set working directory for all build stages.
 WORKDIR /usr/src/app
 
-RUN npm install -g npm@10.5.2
-
 ################################################################################
 # Create a stage for installing production dependecies.
 FROM base as deps
@@ -37,7 +35,7 @@ RUN --mount=type=bind,source=package.json,target=package.json \
 COPY . .
 
 # Run the build script.
-RUN npm run build --verbose
+RUN npm run build
 
 ################################################################################
 # Create a new stage to run the application with minimal runtime dependencies

@@ -20,5 +20,5 @@
         "skipLibCheck": true,
     },
     "exclude": ["./node_modules", "**/__tests__/*", "tests"],
-    "include": ["./src",]
+    "include": ["src",]
 }
