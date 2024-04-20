@@ -20,13 +20,13 @@ export default class Api {
 
         this.fileStore.initialize('./data.json');
 
-        this.app.post('/user', void this.createUser.bind(this));
+        this.app.post('/user', this.createUser.bind(this));
 
-        this.app.post('/event', void this.createEvent.bind(this));
+        this.app.post('/event', this.createEvent.bind(this));
 
-        this.app.post('/coupon', void this.createCoupon.bind(this));
+        this.app.post('/coupon', this.createCoupon.bind(this));
 
-        this.app.get('/user/:user_id', void this.getUser.bind(this));
+        this.app.get('/user/:user_id', this.getUser.bind(this));
     }
 
     private createUser(req: Request, res: Response): void {
