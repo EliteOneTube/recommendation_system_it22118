@@ -35,9 +35,9 @@ RUN --mount=type=bind,source=package.json,target=package.json \
 # Copy the rest of the source files into the image.
 COPY . .
 
-RUN ls -la /src
+RUN ls -la ./src
 
-RUN ls -la /src/datastore
+RUN ls -la ./src/datastore
 
 # Run the build script.
 RUN npm run build
