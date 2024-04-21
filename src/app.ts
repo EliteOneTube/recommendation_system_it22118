@@ -1,6 +1,7 @@
 import Api from './api';
+import 'dotenv/config';
 
 const api = new Api();
 
-api.init();
+void api.init();
 api.startServer();
