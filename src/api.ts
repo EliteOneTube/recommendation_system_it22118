@@ -2,24 +2,24 @@ import express, { Request, Response } from 'express';
 import { validator } from './tools/validator';
 import { User, Event, Coupon } from './types/datastore';
 import { frequencyRecommend } from './tools/recommender';
-import { FileStore } from './datastore/filestore';
 import KafkaProducer from './messager/kafka/kafkaProducer';
 import KafkaHead from './messager/kafka/kafkaHead';
 import logger from './tools/logger';
-
+import MongoStore from './datastore/mongostore';
+import asyncify from 'express-asyncify';
 
 export default class Api {
     private app: express.Express;
 
-    private fileStore: FileStore;
+    private store: MongoStore;
 
     private kafkaHead: KafkaHead;
 
     private producer: KafkaProducer
 
     constructor() {
-        this.app = express();
-        this.fileStore = new FileStore();
+        this.app = asyncify(express());
+        this.store = new MongoStore();
         this.kafkaHead = new KafkaHead();
         this.producer = new KafkaProducer(this.kafkaHead);
     }
@@ -27,7 +27,7 @@ export default class Api {
     public async init(storePath: string) {
         this.app.use(express.json());
 
-        this.fileStore.initialize(storePath);
+        await this.store.initialize(storePath);
 
         await this.producer.connect();
 
@@ -35,16 +35,16 @@ export default class Api {
     }
 
     public registerEndpoints() {
-        this.app.post('/user', this.createUser.bind(this));
+        this.app.post('/user', this.asyncWrapper(this.createUser.bind(this)));
 
-        this.app.post('/event', this.createEvent.bind(this));
+        this.app.post('/event', this.asyncWrapper(this.createEvent.bind(this)));
 
-        this.app.post('/coupon', this.createCoupon.bind(this));
+        this.app.post('/coupon', this.asyncWrapper(this.createCoupon.bind(this)));
 
-        this.app.get('/user/:user_id', this.getUser.bind(this));
+        this.app.get('/user/:user_id', this.asyncWrapper(this.getUser.bind(this)));
     }
 
-    private createUser(req: Request, res: Response): void {
+    private createUser = async (req: Request, res: Response) => {
         const validated = validator('user', req.body as User);
 
         if (!validated.valid) {
@@ -52,7 +52,7 @@ export default class Api {
             return;
         }
 
-        const inserted = this.fileStore.insertUser(req.body as User);
+        const inserted = await this.store.insertUser(req.body as User);
 
         if (!inserted) {
             res.status(409).send('User already exists');
@@ -62,7 +62,7 @@ export default class Api {
         res.send('POST request received at /user');
     }
 
-    private createEvent(req: Request, res: Response): void {
+    private async createEvent(req: Request, res: Response): Promise<void> {
         const validated = validator('event', req.body as Event);
 
         if (!validated.valid) {
@@ -70,7 +70,7 @@ export default class Api {
             return;
         }
 
-        const inserted = this.fileStore.insertEvent(req.body as Event);
+        const inserted = await this.store.insertEvent(req.body as Event);
 
         if (!inserted) {
             res.status(409).send('Event already exists');
@@ -80,7 +80,7 @@ export default class Api {
         res.send('POST request received at /event');
     }
 
-    private createCoupon(req: Request, res: Response): void {
+    private async createCoupon(req: Request, res: Response): Promise<void> {
         const validated = validator('coupon', req.body as Coupon);
 
         if (!validated.valid) {
@@ -88,7 +88,7 @@ export default class Api {
             return;
         }
 
-        const inserted = this.fileStore.insertCoupon(req.body as Coupon);
+        const inserted = await this.store.insertCoupon(req.body as Coupon);
 
         if (!inserted) {
             res.status(409).send('Coupon already exists');
@@ -98,15 +98,15 @@ export default class Api {
         res.send('POST request received at /coupon');
     }
 
-    private getUser(req: Request, res: Response): void {
-        const user = this.fileStore.getUserById(req.params.user_id);
+    private async getUser(req: Request, res: Response): Promise<void> {
+        const user = await this.store.getUserById(req.params.user_id);
 
         if (!user) {
             res.status(404).send('User not found');
             return;
         }
 
-        const recommendations = frequencyRecommend(req.params.user_id, this.fileStore);
+        const recommendations = await frequencyRecommend(req.params.user_id, this);
 
         res.send(recommendations);
     }
@@ -121,5 +121,18 @@ export default class Api {
 
     public getApp() {
         return this.app;
+    }
+
+    private asyncWrapper(fn: (req: Request, res: Response) => Promise<void>) {
+        return (req: Request, res: Response) => {
+            fn(req, res).catch((err) => {
+                logger.error(err);
+                res.status(500).send('Internal server error');
+            });
+        };
+    }
+
+    public getStore() {
+        return this.store;
     }
 }

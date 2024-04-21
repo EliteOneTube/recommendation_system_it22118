@@ -1,6 +1,6 @@
-import { FileStore } from '../datastore/filestore';
 import { Event } from '../types/datastore';
 import { getAllEventIds, mostFrequent } from './utils';
+import Api from 'src/api';
 
 export function randomRecommend(): Event[] {    
     return [
@@ -25,17 +25,27 @@ export function randomRecommend(): Event[] {
     ];
 }
 
-export function frequencyRecommend(user_id: string, filestore: FileStore): Event[] {
-    const userCoupons = filestore.getUserCoupons(user_id).sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()).slice(0, 10);
+export async function frequencyRecommend(user_id: string, api: Api): Promise<Event[]> {
+    const store = api.getStore();
+
+    const userCoupons = (await store.getUserCoupons(user_id)).sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()).slice(0, 10);
 
     if(userCoupons.length === 0){
         return randomRecommend();
     }
 
-    const user_events_id= getAllEventIds(userCoupons);
-
-    const user_events_details = user_events_id.map(eventId => filestore.getEventById(eventId));
+    const user_events_id = getAllEventIds(userCoupons);
     
+    const user_events_details: Event[] = []
+
+    for(const user_event_id of user_events_id) {
+        const event = await store.getEventById(user_event_id);
+
+        if(event){
+            user_events_details.push(event);
+        }
+    }
+
     const sports = user_events_details.map(event => event.sport);
 
     const leagues = user_events_details.map(event => event.league);
@@ -46,7 +56,7 @@ export function frequencyRecommend(user_id: string, filestore: FileStore): Event
 
     //Get the events that match the most frequent sport and league that the user hasn't selected
     //they dont have to both match, just one of them and not be in the user's events
-    const recommendedEvents = filestore.getEvents().filter(event => (event.sport === mostFrequentSport || event.league === mostFrequentLeague) && !user_events_id.includes(event.event_id));
+    const recommendedEvents = (await store.getEvents()).filter(event => (event.sport === mostFrequentSport || event.league === mostFrequentLeague) && !user_events_id.includes(event.event_id));
     
     return recommendedEvents;
 }
