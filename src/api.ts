@@ -24,13 +24,17 @@ export default class Api {
         this.producer = new KafkaProducer(this.kafkaHead);
     }
 
-    public async init() {
+    public async init(storePath: string) {
         this.app.use(express.json());
 
-        this.fileStore.initialize('./data.json');
+        this.fileStore.initialize(storePath);
 
         await this.producer.connect();
 
+        this.registerEndpoints();
+    }
+
+    public registerEndpoints() {
         this.app.post('/user', this.createUser.bind(this));
 
         this.app.post('/event', this.createEvent.bind(this));
@@ -113,5 +117,9 @@ export default class Api {
         });
 
         return server;
+    }
+
+    public getApp() {
+        return this.app;
     }
 }

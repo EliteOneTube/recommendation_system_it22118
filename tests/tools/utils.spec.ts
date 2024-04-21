@@ -1,5 +1,5 @@
 import { describe, expect, it } from '@jest/globals';
-import {mostFrequent} from '../src/tools/utils';
+import {mostFrequent} from '../../src/tools/utils';
 
 describe('Most Frequent Function', () => {
     it('Should return the most frequent element in an array', () => {

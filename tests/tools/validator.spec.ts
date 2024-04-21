@@ -1,6 +1,6 @@
 // Import the validator function and test it
-import { validator } from '../src/tools/validator';
-import { User, Event, Coupon } from '../src/types/datastore';
+import { validator } from '../../src/tools/validator';
+import { User, Event, Coupon } from '../../src/types/datastore';
 import { describe, expect, it } from '@jest/globals';
 
 describe('Validator', () => {

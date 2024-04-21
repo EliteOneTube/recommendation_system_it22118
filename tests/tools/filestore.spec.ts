@@ -1,7 +1,16 @@
 import { describe, expect, it } from '@jest/globals';
-import { FileStore } from '../src/datastore/filestore';
+import { FileStore } from '../../src/datastore/filestore';
+import fs from 'fs';
 
 describe('FileStore', () => {
+    beforeAll(() => {
+        fs.writeFileSync('./test.json', JSON.stringify({ users: [], events: [], coupons: [] }));
+    });
+
+    afterAll(() => {
+        fs.unlinkSync('./test.json');
+    });
+
     it('Should initialize the filestore', () => {
         const fileStore = new FileStore();
         fileStore.initialize('./test.json');

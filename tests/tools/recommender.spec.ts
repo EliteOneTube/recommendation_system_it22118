@@ -1,8 +1,9 @@
 import { describe, expect, it } from '@jest/globals';
-import { randomRecommend, frequencyRecommend } from '../src/tools/recommender';
-import { FileStore } from '../src/datastore/filestore';
-import {generateDummyData} from '../generator/generator';
-import { User } from '../src/types/datastore';
+import { randomRecommend, frequencyRecommend } from '../../src/tools/recommender';
+import { FileStore } from '../../src/datastore/filestore';
+import {generateDummyData} from '../../generator/generator';
+import { User } from '../../src/types/datastore';
+import fs from 'fs';
 
 describe('Random Recommender', () => {
     it('Should return a list of recommendations', () => {
@@ -23,6 +24,10 @@ describe('Random Recommender', () => {
 });
 
 describe('Frequency Recommender', () => {
+    afterAll(() => {
+        fs.unlinkSync('./test.json');
+    });
+
     it('Should return a list of recommendations based on activity', () => {
         const filestore = new FileStore();
         filestore.initialize('./test.json');

@@ -3,18 +3,20 @@ import request  from 'supertest';
 import { Coupon } from '../../src/types/datastore';
 import API from '../../src/api';
 import http from 'http';
+import express from 'express';
+import fs from 'fs';
 
 describe('User test suite', () => {
-    let server: http.Server;
+    let server: http.Server | express.Express;
 
-    beforeAll(() => {
+    beforeEach(async () => {
         const api = new API();
-        api.init();
-        server = api.startServer();
+        await api.init('./coupon.json');
+        server = api.getApp();
     });
 
     afterAll(() => {
-        server.close();
+        fs.unlinkSync('./coupon.json');
     });
 
     it('Should return 200', async () => {

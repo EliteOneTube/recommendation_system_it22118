@@ -1,6 +1,7 @@
 import { Producer } from 'kafkajs';
 import { AbstractProducer } from '../producer';
 import KafkaHead from './kafkaHead';
+import logger from '../../tools/logger';
 
 export default class KafkaProducer extends AbstractProducer {
     private producer: Producer;
@@ -24,6 +25,10 @@ export default class KafkaProducer extends AbstractProducer {
     }
 
     async connect(): Promise<void> {
-        await this.producer.connect();
+        try {
+            await this.producer.connect();
+        } catch (error) {
+            logger.info(`Starting application without Kafka producer`);
+        }
     }
 }
