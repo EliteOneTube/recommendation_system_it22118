@@ -1,19 +1,16 @@
-import { Kafka, Producer } from 'kafkajs';
+import { Producer } from 'kafkajs';
 import { AbstractProducer } from '../producer';
+import KafkaHead from './kafkaHead';
 
 export default class KafkaProducer extends AbstractProducer {
     private producer: Producer;
 
-    constructor() {
+    constructor(kafkaHead: KafkaHead) {
         super();
-        this.producer = new Kafka({
-            clientId: 'recommendation_system',
-            brokers: ['localhost:9092']
-        }).producer();
+        this.producer = kafkaHead.getProducer();
     }
 
     async produce(topic: string, message: string): Promise<void> {
-        await this.producer.connect();
         await this.producer.send({
             topic: topic,
             messages: [

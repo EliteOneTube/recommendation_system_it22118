@@ -3,6 +3,9 @@ import { validator } from './tools/validator';
 import { User, Event, Coupon } from './types/datastore';
 import { frequencyRecommend } from './tools/recommender';
 import { FileStore } from './datastore/filestore';
+import KafkaProducer from './messager/kafka/kafkaProducer';
+import KafkaHead from './messager/kafka/kafkaHead';
+import logger from './tools/logger';
 
 
 export default class Api {
@@ -10,15 +13,23 @@ export default class Api {
 
     private fileStore: FileStore;
 
+    private kafkaHead: KafkaHead;
+
+    private producer: KafkaProducer
+
     constructor() {
         this.app = express();
         this.fileStore = new FileStore();
+        this.kafkaHead = new KafkaHead();
+        this.producer = new KafkaProducer(this.kafkaHead);
     }
 
-    public init() {
+    public async init() {
         this.app.use(express.json());
 
         this.fileStore.initialize('./data.json');
+
+        await this.producer.connect();
 
         this.app.post('/user', this.createUser.bind(this));
 
@@ -97,8 +108,8 @@ export default class Api {
     }
 
     public startServer() {
-        const server = this.app.listen(3000, () => {
-            console.log('Server is running on port 3000');
+        const server = this.app.listen(process.env.PORT || 3000, () => {
+            logger.info(`Server running on port ${process.env.PORT || 3000}`);
         });
 
         return server;
