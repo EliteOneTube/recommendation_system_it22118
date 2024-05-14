@@ -69,6 +69,13 @@ To start the production application
   docker-compose up -d
 ```
 
+## Data Generator
+
+To generate data for the application, run the following command (Will send data to the endpoints of the application)
+```bash
+  npm run generator
+```
+
 ## Authors
 
 - [@EliteOneTube](https://github.com/EliteOneTube)

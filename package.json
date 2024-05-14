@@ -5,8 +5,9 @@
   "scripts": {
     "dev": "npx nodemon src/app.ts",
     "test": "set KAFKAJS_NO_PARTITIONER_WARNING=1 && npx jest tests",
-    "generate": "npx tsx generator/generate.ts",
-    "build": "tsc"
+    "generator": "npx tsx generator/generator.ts",
+    "build": "tsc",
+    "start": "node dist/app.js"
   },
   "author": "",
   "license": "ISC",
@@ -31,6 +32,7 @@
     "typescript-eslint": "^7.5.0"
   },
   "dependencies": {
+    "axios": "^1.6.8",
     "dotenv": "^16.4.5",
     "express": "^4.19.2",
     "express-asyncify": "^2.1.3",

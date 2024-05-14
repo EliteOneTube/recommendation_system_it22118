@@ -1,6 +1,6 @@
 import { faker } from '@faker-js/faker';
 import { User, Event, Coupon, Selection } from '../src/types/datastore';
-import * as fs from "fs";
+import axios from 'axios';
 
 const leagues = {
     "Football": ["NFL", "NCAA", "CFL", "AFL"],
@@ -91,9 +91,40 @@ export const generateDummyData = (numUsers: number, numEvents: number, numCoupon
     return { users, events, coupons };
 };
 
-// Example usage
-const dummyData = generateDummyData(10, 20, 30);
+const sendDummyData = (numUsers: number, numEvents: number, numCoupons: number) => {
+    console.log('Sending dummy data to server')
 
-const path = '../data.json'
+    // Generate dummy data and send it to the server
+    const dummyData = generateDummyData(numUsers, numEvents, numCoupons);
+    
+    //send data to server
+    for(const user of dummyData.users){
+        axios.post('http://localhost:3000/user', user).catch((err) => {
+            console.log(err)
+        });
+    }
 
-fs.writeFileSync(path, JSON.stringify(dummyData, null, 2));
+    console.log('Sent ' + dummyData.users.length + ' users to server')
+
+    for(const event of dummyData.events){
+        axios.post('http://localhost:3000/event', event).catch((err) => {
+            console.log(err)
+        });
+    }
+
+    console.log('Sent ' + dummyData.events.length + ' events to server')
+
+    for(const coupon of dummyData.coupons){
+        axios.post('http://localhost:3000/coupon', coupon).catch((err) => {
+            console.log(err)
+        });
+    }
+
+    console.log('Sent ' + dummyData.coupons.length + ' coupons to server')
+};
+
+console.log('Starting dummy data generator in 5 seconds...')
+
+setInterval(() => {
+    sendDummyData(10, 10, 10)
+}, 5000);
