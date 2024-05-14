@@ -91,8 +91,16 @@ export const generateDummyData = (numUsers: number, numEvents: number, numCoupon
     return { users, events, coupons };
 };
 
-const sendDummyData = (numUsers: number, numEvents: number, numCoupons: number) => {
-    console.log('Sending dummy data to server')
+const sendDummyData = async (numUsers: number, numEvents: number, numCoupons: number) => {
+    const isRunning = await axios.get('http://localhost:3000/ping').then(() => {
+        console.log('Server is running, sending data...')
+        return true;
+    }).catch(() => {
+        console.log('Server is not running...')
+        return false;
+    });
+
+    if(!isRunning) return;
 
     // Generate dummy data and send it to the server
     const dummyData = generateDummyData(numUsers, numEvents, numCoupons);
@@ -126,5 +134,5 @@ const sendDummyData = (numUsers: number, numEvents: number, numCoupons: number) 
 console.log('Starting dummy data generator in 5 seconds...')
 
 setInterval(() => {
-    sendDummyData(10, 10, 10)
+    void sendDummyData(10, 10, 10)
 }, 5000);

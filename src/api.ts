@@ -42,6 +42,8 @@ export default class Api {
         this.app.post('/coupon', this.asyncWrapper(this.createCoupon.bind(this)));
 
         this.app.get('/user/:user_id', this.asyncWrapper(this.getUser.bind(this)));
+
+        this.app.get('ping', this.ping.bind(this));
     }
 
     private createUser = async (req: Request, res: Response) => {
@@ -134,5 +136,9 @@ export default class Api {
 
     public getStore() {
         return this.store;
+    }
+
+    private ping(req: Request, res: Response) {
+        res.send('Pong');
     }
 }
