@@ -7,27 +7,37 @@ import KafkaHead from './messager/kafka/kafkaHead';
 import logger from './tools/logger';
 import MongoStore from './datastore/mongostore';
 import asyncify from 'express-asyncify';
+import { FileStore } from './datastore/filestore';
 
 export default class Api {
     private app: express.Express;
 
-    private store: MongoStore;
+    private store: MongoStore | FileStore;
 
     private kafkaHead: KafkaHead;
 
     private producer: KafkaProducer
+
+    private fallbackStore: FileStore
 
     constructor() {
         this.app = asyncify(express());
         this.store = new MongoStore();
         this.kafkaHead = new KafkaHead();
         this.producer = new KafkaProducer(this.kafkaHead);
+        this.fallbackStore = new FileStore();
     }
 
     public async init(storePath: string) {
         this.app.use(express.json());
 
-        await this.store.initialize(storePath);
+        if (!storePath) {
+            logger.warn('No store path provided, using fallback store');
+            this.fallbackStore.initialize('data.json');
+            this.store = this.fallbackStore;
+        } else {
+            await this.store.initialize(storePath);
+        }
 
         await this.producer.connect();
 
