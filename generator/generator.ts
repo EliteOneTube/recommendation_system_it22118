@@ -134,5 +134,5 @@ const sendDummyData = async (numUsers: number, numEvents: number, numCoupons: nu
 console.log('Starting dummy data generator in 5 seconds...')
 
 setInterval(() => {
-    void sendDummyData(10, 10, 10)
+    void sendDummyData(100, 100, 100)
 }, 5000);

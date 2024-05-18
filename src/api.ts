@@ -85,9 +85,11 @@ export default class Api {
 
         this.app.post('/coupon', this.asyncWrapper(this.createCoupon.bind(this)));
 
-        this.app.get('/user/:user_id', this.asyncWrapper(this.getUser.bind(this)));
+        this.app.get('/user/:user_id', this.asyncWrapper(this.getRec.bind(this)));
 
         this.app.get('/ping', this.ping.bind(this));
+
+        this.app.get('/random', this.asyncWrapper(this.getRandomRec.bind(this)));
     }
 
     private createUser = async (req: Request, res: Response) => {
@@ -135,7 +137,7 @@ export default class Api {
         res.send('POST request received at /coupon');
     }
 
-    private async getUser(req: Request, res: Response): Promise<void> {
+    private async getRec(req: Request, res: Response): Promise<void> {
         const user = await this.store.getUserById(req.params.user_id);
 
         if (!user) {
@@ -144,6 +146,17 @@ export default class Api {
         }
 
         const recommendations = await frequencyRecommend(req.params.user_id, this);
+
+        res.send(recommendations);
+    }
+
+    private async getRandomRec(req: Request, res: Response): Promise<void> {
+        const user = await this.store.getUsers();
+
+        //calculate a random number between 0 and the number of users
+        const random = Math.floor(Math.random() * user.length);
+
+        const recommendations = await frequencyRecommend(user[random].user_id, this);
 
         res.send(recommendations);
     }
