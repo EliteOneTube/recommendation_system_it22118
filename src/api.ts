@@ -23,17 +23,18 @@ export default class Api {
 
     private fallbackStore: FileStore;
 
-    private consumers: KafkaConsumer[] = [];
+    private consumer: KafkaConsumer;
 
     private kafkaAdmin: Admin;
 
-    private static topicList: string[] = ['user', 'event', 'coupon', 'recommendation'];
+    private static topicList: string[] = ['user', 'event', 'coupon'];
 
     constructor() {
         this.app = asyncify(express());
         this.store = new MongoStore();
         this.kafkaHead = new KafkaHead();
         this.fallbackStore = new FileStore();
+        this.consumer = new KafkaConsumer(this.kafkaHead, this.store);
     }
 
     public async init(storePath: string) {
@@ -69,10 +70,10 @@ export default class Api {
 
         //create consumer for each topic
         for(let i = 0; i < Api.topicList.length; i++) {
-            this.consumers.push(new KafkaConsumer(this.kafkaHead));
-            await this.consumers[i].connect(Api.topicList[i]);
-            await this.consumers[i].consume();
+            await this.consumer.connect(Api.topicList[i]);
         }
+
+        await this.consumer.consume();
 
         this.registerEndpoints();
     }
@@ -99,14 +100,7 @@ export default class Api {
 
         const user = req.body as User;
 
-        const inserted = await this.store.insertUser(user);
-
-        await this.producers['user'].produce('user', user.user_id);
-
-        if (!inserted) {
-            res.status(409).send('User already exists');
-            return;
-        }
+        await this.producers['user'].produce('user', JSON.stringify(user));
 
         res.send('POST request received at /user');
     }
@@ -119,12 +113,9 @@ export default class Api {
             return;
         }
 
-        const inserted = await this.store.insertEvent(req.body as Event);
+        const event = req.body as Event;
 
-        if (!inserted) {
-            res.status(409).send('Event already exists');
-            return;
-        }
+        await this.producers['event'].produce('event', JSON.stringify(event));
 
         res.send('POST request received at /event');
     }
@@ -137,12 +128,9 @@ export default class Api {
             return;
         }
 
-        const inserted = await this.store.insertCoupon(req.body as Coupon);
+        const coupon = req.body as Coupon;
 
-        if (!inserted) {
-            res.status(409).send('Coupon already exists');
-            return;
-        }
+        await this.producers['coupon'].produce('coupon', JSON.stringify(coupon));
 
         res.send('POST request received at /coupon');
     }

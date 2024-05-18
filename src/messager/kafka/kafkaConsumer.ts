@@ -1,25 +1,50 @@
 import { AbstractConsumer } from "../consumer";
-import { Consumer, EachMessagePayload } from "kafkajs";
+import { Consumer, EachMessagePayload,  KafkaMessage} from "kafkajs";
 import KafkaHead from "./kafkaHead";
+import MongoStore from "src/datastore/mongostore";
+import { FileStore } from "src/datastore/filestore";
+import { User, Event, Coupon } from "src/types/datastore";
 
 export class KafkaConsumer extends AbstractConsumer {
-    private consumer: Consumer
+    private consumer: Consumer;
 
-    constructor(kafkaHead: KafkaHead) {
+    private store: MongoStore | FileStore;
+
+    constructor(kafkaHead: KafkaHead, store: MongoStore | FileStore) {
         super();
         this.consumer = kafkaHead.getConsumer('rec-consumer');
+        this.store = store;
     }
 
     async consume(): Promise<void> {
         await this.consumer.run({
-            eachMessage: async (payload) => {
+            eachMessage: async (payload: EachMessagePayload) => {
                 await this.handle(payload);
+
+                await payload.heartbeat();
             },
         });
     }
+    
 
     async handle(payload: EachMessagePayload): Promise<void> {
-        console.log(`Received message: ${payload.message.value.toString()}`);
+        const message: KafkaMessage = payload.message;
+        const value = message.value.toString();
+        
+        const parsedValue= JSON.parse(value) as User | Event | Coupon;
+        switch (payload.topic) {
+            case 'user':
+                await this.store.insertUser(parsedValue as User);
+                break;
+            case 'event':
+                await this.store.insertEvent(parsedValue as Event);
+                break;
+            case 'coupon':
+                await this.store.insertCoupon(parsedValue as Coupon);
+                break;
+            default:
+                break;
+        }
     }
 
     async disconnect(): Promise<void> {
@@ -28,6 +53,9 @@ export class KafkaConsumer extends AbstractConsumer {
 
     async connect(topic: string): Promise<void> {
         await this.consumer.connect();
-        await this.consumer.subscribe({ topic: topic });
+        await this.consumer.subscribe({ 
+            topic: topic,
+            fromBeginning: true
+        });
     }
 }
