@@ -1,6 +1,6 @@
 import Api from './api';
 import 'dotenv/config';
-import logger from './tools/logger';
+import {logger} from './tools/logger';
 
 const api = new Api();
 

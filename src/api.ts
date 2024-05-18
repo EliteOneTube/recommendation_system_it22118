@@ -4,10 +4,12 @@ import { User, Event, Coupon } from './types/datastore';
 import { frequencyRecommend } from './tools/recommender';
 import KafkaProducer from './messager/kafka/kafkaProducer';
 import KafkaHead from './messager/kafka/kafkaHead';
-import logger from './tools/logger';
+import { logger } from './tools/logger';
 import MongoStore from './datastore/mongostore';
 import asyncify from 'express-asyncify';
 import { FileStore } from './datastore/filestore';
+import { KafkaConsumer } from './messager/kafka/kafkaConsumer';
+import { Admin } from 'kafkajs';
 
 export default class Api {
     private app: express.Express;
@@ -16,30 +18,61 @@ export default class Api {
 
     private kafkaHead: KafkaHead;
 
-    private producer: KafkaProducer
+    //producers should be an array of objects, one for each topic
+    private producers: { [key: string]: KafkaProducer } = {};
 
-    private fallbackStore: FileStore
+    private fallbackStore: FileStore;
+
+    private consumers: KafkaConsumer[] = [];
+
+    private kafkaAdmin: Admin;
+
+    private static topicList: string[] = ['user', 'event', 'coupon', 'recommendation'];
 
     constructor() {
         this.app = asyncify(express());
         this.store = new MongoStore();
         this.kafkaHead = new KafkaHead();
-        this.producer = new KafkaProducer(this.kafkaHead);
         this.fallbackStore = new FileStore();
     }
 
     public async init(storePath: string) {
+        this.kafkaAdmin = this.kafkaHead.admin();
+
         this.app.use(express.json());
 
         if (!storePath) {
-            logger.warn('No store path provided, using fallback store');
+            logger.warn('This is not recommended for production use');
             this.fallbackStore.initialize('data.json');
             this.store = this.fallbackStore;
         } else {
             await this.store.initialize(storePath);
         }
 
-        await this.producer.connect();
+        //get all topics from kafka
+        const topics = await this.kafkaAdmin.listTopics();
+
+        //create topics if they don't exist
+        for (const topic of Api.topicList) {
+            if (!topics.includes(topic)) {
+                await this.kafkaAdmin.createTopics({
+                    topics: [{ topic: topic }]
+                });
+            }
+        }
+        
+        //create producer for each topic
+        for(let i = 0; i < Api.topicList.length; i++) {
+            this.producers[Api.topicList[i]] = new KafkaProducer(this.kafkaHead);
+            await this.producers[Api.topicList[i]].connect();
+        }
+
+        //create consumer for each topic
+        for(let i = 0; i < Api.topicList.length; i++) {
+            this.consumers.push(new KafkaConsumer(this.kafkaHead));
+            await this.consumers[i].connect(Api.topicList[i]);
+            await this.consumers[i].consume();
+        }
 
         this.registerEndpoints();
     }
@@ -53,7 +86,7 @@ export default class Api {
 
         this.app.get('/user/:user_id', this.asyncWrapper(this.getUser.bind(this)));
 
-        this.app.get('ping', this.ping.bind(this));
+        this.app.get('/ping', this.ping.bind(this));
     }
 
     private createUser = async (req: Request, res: Response) => {
@@ -64,7 +97,11 @@ export default class Api {
             return;
         }
 
-        const inserted = await this.store.insertUser(req.body as User);
+        const user = req.body as User;
+
+        const inserted = await this.store.insertUser(user);
+
+        await this.producers['user'].produce('user', user.user_id);
 
         if (!inserted) {
             res.status(409).send('User already exists');
