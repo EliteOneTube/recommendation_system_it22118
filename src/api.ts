@@ -38,8 +38,6 @@ export default class Api {
     }
 
     public async init(storePath: string) {
-        this.kafkaAdmin = this.kafkaHead.admin();
-
         this.app.use(express.json());
 
         if (!storePath) {
@@ -49,6 +47,8 @@ export default class Api {
         } else {
             await this.store.initialize(storePath);
         }
+
+        this.kafkaAdmin = this.kafkaHead.admin();
 
         //get all topics from kafka
         const topics = await this.kafkaAdmin.listTopics();

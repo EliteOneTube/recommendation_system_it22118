@@ -5,11 +5,15 @@ export default class KafkaHead {
     private kafka: Kafka;
 
     constructor() {
-        this.kafka = new Kafka({
-            brokers: [process.env.KAFKA_URL],
-            logCreator: kafkaLogger,
-            logLevel: logLevel.ERROR
-        });
+        try {
+            this.kafka = new Kafka({
+                brokers: [process.env.KAFKA_URL],
+                logCreator: kafkaLogger,
+                logLevel: logLevel.ERROR
+            });
+        } catch (error) {
+            return null;
+        }
     }
 
     public admin() {
