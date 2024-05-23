@@ -10,9 +10,9 @@ export class KafkaConsumer extends AbstractConsumer {
 
     private store: MongoStore | FileStore;
 
-    constructor(kafkaHead: KafkaHead, store: MongoStore | FileStore) {
+    constructor(kafkaHead: KafkaHead, store: MongoStore | FileStore, group: string) {
         super();
-        this.consumer = kafkaHead.getConsumer('rec-consumer');
+        this.consumer = kafkaHead.getConsumer(group);
         this.store = store;
     }
 
@@ -31,19 +31,23 @@ export class KafkaConsumer extends AbstractConsumer {
         const message: KafkaMessage = payload.message;
         const value = message.value.toString();
         
-        const parsedValue= JSON.parse(value) as User | Event | Coupon;
-        switch (payload.topic) {
-            case 'user':
-                await this.store.insertUser(parsedValue as User);
-                break;
-            case 'event':
-                await this.store.insertEvent(parsedValue as Event);
-                break;
-            case 'coupon':
-                await this.store.insertCoupon(parsedValue as Coupon);
-                break;
-            default:
-                break;
+        try {
+            const parsedValue= JSON.parse(value) as User | Event | Coupon;
+            switch (payload.topic) {
+                case 'user':
+                    await this.store.insertUser(parsedValue as User);
+                    break;
+                case 'event':
+                    await this.store.insertEvent(parsedValue as Event);
+                    break;
+                case 'coupon':
+                    await this.store.insertCoupon(parsedValue as Coupon);
+                    break;
+                default:
+                    break;
+            }
+        } catch (error) {
+            console.error(error);
         }
     }
 
@@ -54,8 +58,7 @@ export class KafkaConsumer extends AbstractConsumer {
     async connect(topic: string): Promise<void> {
         await this.consumer.connect();
         await this.consumer.subscribe({ 
-            topic: topic,
-            fromBeginning: true
+            topic: topic
         });
     }
 }

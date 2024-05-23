@@ -21,9 +21,9 @@ export default class Api {
     //producers should be an array of objects, one for each topic
     private producers: { [key: string]: KafkaProducer } = {};
 
-    private fallbackStore: FileStore;
+    private consumers: { [key: string]: KafkaConsumer } = {};
 
-    private consumer: KafkaConsumer;
+    private fallbackStore: FileStore;
 
     private kafkaAdmin: Admin;
 
@@ -34,7 +34,6 @@ export default class Api {
         this.store = new MongoStore();
         this.kafkaHead = new KafkaHead();
         this.fallbackStore = new FileStore();
-        this.consumer = new KafkaConsumer(this.kafkaHead, this.store);
     }
 
     public async init(storePath: string) {
@@ -70,10 +69,10 @@ export default class Api {
 
         //create consumer for each topic
         for(let i = 0; i < Api.topicList.length; i++) {
-            await this.consumer.connect(Api.topicList[i]);
+            this.consumers[Api.topicList[i]] = new KafkaConsumer(this.kafkaHead, this.store, Api.topicList[i]);
+            await this.consumers[Api.topicList[i]].connect(Api.topicList[i]);
+            await this.consumers[Api.topicList[i]].consume();
         }
-
-        await this.consumer.consume();
 
         this.registerEndpoints();
     }
