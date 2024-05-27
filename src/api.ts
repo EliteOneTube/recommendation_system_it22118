@@ -2,14 +2,11 @@ import express, { Request, Response } from 'express';
 import { validator } from './tools/validator';
 import { User, Event, Coupon } from './types/datastore';
 import { frequencyRecommend } from './tools/recommender';
-import KafkaProducer from './messager/kafka/kafkaProducer';
 import KafkaHead from './messager/kafka/kafkaHead';
 import { logger } from './tools/logger';
 import MongoStore from './datastore/mongostore';
 import asyncify from 'express-asyncify';
 import { FileStore } from './datastore/filestore';
-import { KafkaConsumer } from './messager/kafka/kafkaConsumer';
-import { Admin } from 'kafkajs';
 
 export default class Api {
     private app: express.Express;
@@ -18,21 +15,12 @@ export default class Api {
 
     private kafkaHead: KafkaHead;
 
-    //producers should be an array of objects, one for each topic
-    private producers: { [key: string]: KafkaProducer } = {};
-
-    private consumers: { [key: string]: KafkaConsumer } = {};
-
     private fallbackStore: FileStore;
-
-    private kafkaAdmin: Admin;
-
-    private static topicList: string[] = ['user', 'event', 'coupon'];
 
     constructor() {
         this.app = asyncify(express());
         this.store = new MongoStore();
-        this.kafkaHead = new KafkaHead();
+        this.kafkaHead = new KafkaHead(this.store);
         this.fallbackStore = new FileStore();
     }
 
@@ -47,32 +35,7 @@ export default class Api {
             await this.store.initialize(storePath);
         }
 
-        this.kafkaAdmin = this.kafkaHead.admin();
-
-        //get all topics from kafka
-        const topics = await this.kafkaAdmin.listTopics();
-
-        //create topics if they don't exist
-        for (const topic of Api.topicList) {
-            if (!topics.includes(topic)) {
-                await this.kafkaAdmin.createTopics({
-                    topics: [{ topic: topic }]
-                });
-            }
-        }
-        
-        //create producer for each topic
-        for(let i = 0; i < Api.topicList.length; i++) {
-            this.producers[Api.topicList[i]] = new KafkaProducer(this.kafkaHead);
-            await this.producers[Api.topicList[i]].connect();
-        }
-
-        //create consumer for each topic
-        for(let i = 0; i < Api.topicList.length; i++) {
-            this.consumers[Api.topicList[i]] = new KafkaConsumer(this.kafkaHead, this.store, Api.topicList[i]);
-            await this.consumers[Api.topicList[i]].connect(Api.topicList[i]);
-            await this.consumers[Api.topicList[i]].consume();
-        }
+        await this.kafkaHead.init();
 
         this.registerEndpoints();
     }
@@ -99,9 +62,11 @@ export default class Api {
             return;
         }
 
+        this.kafkaHead.increaseEventsPerMinute('user');
+
         const user = req.body as User;
 
-        await this.producers['user'].produce('user', JSON.stringify(user));
+        await this.kafkaHead.returnProducer('user').produce('user', JSON.stringify(user));
 
         res.send('POST request received at /user');
     }
@@ -114,9 +79,11 @@ export default class Api {
             return;
         }
 
+        this.kafkaHead.increaseEventsPerMinute('event');
+
         const event = req.body as Event;
 
-        await this.producers['event'].produce('event', JSON.stringify(event));
+        await this.kafkaHead.returnProducer('event').produce('event', JSON.stringify(event));
 
         res.send('POST request received at /event');
     }
@@ -129,9 +96,11 @@ export default class Api {
             return;
         }
 
+        this.kafkaHead.increaseEventsPerMinute('coupon');
+
         const coupon = req.body as Coupon;
 
-        await this.producers['coupon'].produce('coupon', JSON.stringify(coupon));
+        await this.kafkaHead.returnProducer('coupon').produce('coupon', JSON.stringify(coupon));
 
         res.send('POST request received at /coupon');
     }
