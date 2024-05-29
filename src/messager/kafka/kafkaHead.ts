@@ -111,27 +111,37 @@ export default class KafkaHead {
         for (const topic of KafkaHead.topicList) {
             const numOfConsumers = this.getNumOfConsumers(topic);
 
-            if (numOfConsumers * 60 < this.eventsPerMinute[topic]) {
-                const newConsumer = new KafkaConsumer(this, this.store, topic+this.consumers[topic].length);
-                newConsumer.connect(topic).then(() => {
-                    newConsumer.consume().then(() => {
-                        this.consumers[topic].push(newConsumer);
-                        logger.info(`Created new consumer for topic ${topic}`);
+            const missingConsumers = Math.ceil(this.eventsPerMinute[topic] / 60) - numOfConsumers;
+
+            if (missingConsumers > 0) {
+                for (let i = 0; i < missingConsumers; i++) {
+                    const newConsumer = new KafkaConsumer(this, this.store, topic+this.consumers[topic].length);
+                    newConsumer.connect(topic).then(() => {
+                        newConsumer.consume().then(() => {
+                            this.consumers[topic].push(newConsumer);
+                        }).catch((error) => {
+                            console.error(error);
+                        });
                     }).catch((error) => {
                         console.error(error);
                     });
-                }).catch((error) => {
-                    console.error(error);
-                });
+                }
+
+                logger.info(`Created ${missingConsumers} new consumers for topic ${topic}`);
             }
 
-            if (numOfConsumers * 60 > this.eventsPerMinute[topic] && this.consumers[topic].length > 1) {
-                const consumer = this.consumers[topic].pop();
-                consumer.disconnect().then(() => {
-                    logger.info(`Consumer disconnected from topic ${topic}`);
-                }).catch((error) => {
-                    console.error(error);
-                });
+            const excessConsumers = (numOfConsumers * 60 - this.eventsPerMinute[topic]) / 60 - 1 ;  
+
+            if (excessConsumers > 0 && this.consumers[topic].length > 1) {
+                for(let i = 0; i < excessConsumers; i++) {
+                    const consumer = this.consumers[topic].pop();
+                    consumer.disconnect().then(() => {
+                    }).catch((error) => {
+                        console.error(error);
+                    });
+                }
+
+                logger.info(`Removed ${excessConsumers} consumers for topic ${topic}`);
             }
 
             this.eventsPerMinute[topic] = 0;
