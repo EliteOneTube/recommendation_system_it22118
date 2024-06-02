@@ -130,8 +130,8 @@ export default class Api {
     }
 
     public startServer() {
-        const server = this.app.listen(process.env.PORT || 3000, () => {
-            logger.info(`Server running on port ${process.env.PORT || 3000}`);
+        const server = this.app.listen(Number(process.env.PORT), '0.0.0.0', () => {
+            logger.info(`Server running on port ${process.env.PORT}`);
         });
 
         return server;

@@ -3,10 +3,11 @@ services:
     build:
       context: .
     environment:
-      NODE_ENV: production
-      KAFKAJS_NO_PARTITIONER_WARNING: 1
+      - KAFKAJS_NO_PARTITIONER_WARNING=1
+    env_file:
+      - .env
     ports:
-      - 3000:3000
+      - 8080:8080
     depends_on:
       - mongodb
       - kafka
@@ -14,7 +15,7 @@ services:
     image: mongodb/mongodb-community-server
     restart: always
     ports:
-      - 27018:27017
+      - 27017:27017
     volumes:
       - mongodb-data:/var/lib/mongodb/data
   kafka:
@@ -23,3 +24,7 @@ services:
       - 9092:9092
 volumes:
   mongodb-data:
+networks:
+  default:
+    driver: bridge
+    name: my-network
