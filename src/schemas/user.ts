@@ -8,8 +8,9 @@ export const userSchema: jsonschema.Schema = {
         currency: { type: 'string' },
         gender: { type: 'string' },
         registration_date: { type: 'string' },
-        user_id: { type: 'string' }
+        user_id: { type: 'string' },
+        client_id: { type: 'string' }
     },
-    required: ['birth_year', 'country', 'currency', 'gender', 'registration_date', 'user_id'],
+    required: ['birth_year', 'country', 'currency', 'gender', 'registration_date', 'user_id', 'client_id'],
     additionalProperties: false
 };

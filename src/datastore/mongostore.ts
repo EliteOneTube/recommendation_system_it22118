@@ -23,7 +23,8 @@ export default class MongoStore extends Store {
             currency: String,
             gender: String,
             registration_date: String,
-            user_id: String
+            user_id: String,
+            client_id: String
         });
 
         this.eventSchema = new Schema<Event>({
@@ -33,7 +34,8 @@ export default class MongoStore extends Store {
             event_id: String,
             league: String,
             participants: [String],
-            sport: String
+            sport: String,
+            client_id: String
         });
 
         this.couponSchema = new Schema<Coupon>({
@@ -41,7 +43,8 @@ export default class MongoStore extends Store {
             selections: [{ event_id: String, odds: Number }],
             stake: Number,
             timestamp: String,
-            user_id: String
+            user_id: String,
+            client_id: String
         });
 
         this.userModel = model<User>('User', this.userSchema);
@@ -55,36 +58,38 @@ export default class MongoStore extends Store {
         await connect(path);
     }
 
-    public async getUsers(): Promise<User[]> {
-        return this.userModel.find();
+    public async getUsers(client_id: string): Promise<User[]> {
+        return this.userModel.find({ client_id });
     }
 
-    public async getEvents(): Promise<Event[]> {
-        return this.eventModel.find();
+    public async getEvents(client_id: string): Promise<Event[]> {
+        return this.eventModel.find({ client_id});
     }
 
-    public async getCoupons(): Promise<Coupon[]> {
-        return this.couponModel.find();
+    public async getCoupons(client_id: string): Promise<Coupon[]> {
+        return this.couponModel.find({ client_id});
     }
 
-    public async getUserById(userId: string): Promise<User | undefined> {
-        return this.userModel.findOne({ user_id: userId });
+    public async getUserById(user_id: string, client_id: string): Promise<User | undefined> {
+        const query = { user_id, client_id };
+
+        return await this.userModel.findOne(query);
     }
 
-    public async getEventById(eventId: string): Promise<Event | undefined> {
-        return this.eventModel.findOne({ event_id: eventId });
+    public async getEventById(event_id: string, client_id: string): Promise<Event | undefined> {
+        return this.eventModel.findOne({ event_id, client_id });
     }
 
-    public async getCouponById(couponId: string): Promise<Coupon | undefined> {
-        return this.couponModel.findOne({ coupon_id: couponId });
+    public async getCouponById(coupon_id: string, client_id: string): Promise<Coupon | undefined> {
+        return this.couponModel.findOne({ coupon_id, client_id});
     }
 
-    public async getUserCoupons(userId: string): Promise<Coupon[]> {
-        return this.couponModel.find({ user_id: userId });
+    public async getUserCoupons(user_id: string, client_id: string): Promise<Coupon[]> {
+        return this.couponModel.find({ user_id, client_id});
     }
 
-    public async getEventCoupons(eventId: string): Promise<Coupon[]> {
-        return this.couponModel.find({ 'selections.event_id': eventId });
+    public async getEventCoupons(event_id: string, client_id: string): Promise<Coupon[]> {
+        return this.couponModel.find({ 'selections.event_id': event_id, client_id });
     }
 
     public async insertUser(user: User): Promise<boolean> {

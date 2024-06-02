@@ -9,6 +9,19 @@ const leagues = {
     "Hockey": ["NHL", "AHL"]
 }
 
+const client_ids = [
+    "client_id_1",
+    "client_id_2",
+    "client_id_3",
+    "client_id_4",
+    "client_id_5",
+    "client_id_6",
+    "client_id_7",
+    "client_id_8",
+    "client_id_9",
+    "client_id_10"
+]
+
 // Function to generate a random user
 const generateUser = (): User => {
     return {
@@ -17,7 +30,8 @@ const generateUser = (): User => {
         currency: faker.finance.currencyCode(),
         gender: faker.helpers.arrayElement(['M', 'F']),
         registration_date: faker.date.past().toISOString(),
-        user_id: faker.string.uuid()
+        user_id: faker.string.uuid(),
+        client_id: faker.helpers.arrayElement(client_ids)
     }
 };
 
@@ -34,7 +48,8 @@ const generateEvent = (): Event => {
         event_id: faker.string.uuid(),
         league: league,
         participants: [faker.lorem.word(), faker.lorem.word()],
-        sport: sport
+        sport: sport,
+        client_id: faker.helpers.arrayElement(client_ids)
     };
 };
 
@@ -57,7 +72,8 @@ const generateCoupon = (userIds: string[], eventIds: string[]): Coupon => {
         selections,
         stake: parseFloat(faker.finance.amount()),
         timestamp: faker.date.past().toISOString(),
-        user_id: faker.helpers.arrayElement(userIds)
+        user_id: faker.helpers.arrayElement(userIds),
+        client_id: faker.helpers.arrayElement(client_ids)
     };
 };
 

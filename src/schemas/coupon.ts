@@ -18,8 +18,9 @@ export const couponSchema: jsonschema.Schema = {
                 required: ['event_id', 'odds'],
                 additionalProperties: false
             }
-        }
+        },
+        client_id: { type: 'string' }
     },
-    required: ['coupon_id', 'stake', 'timestamp', 'user_id', 'selections'],
+    required: ['coupon_id', 'stake', 'timestamp', 'user_id', 'selections', 'client_id'],
     additionalProperties: false
 };

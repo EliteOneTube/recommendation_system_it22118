@@ -28,40 +28,40 @@ export class FileStore extends Store {
         this.coupons = coupons;
     }
 
-    public getUsers(): User[] {
-        return this.users;
+    public getUsers(client_id: string): User[] {
+        return this.users.filter((user) => user.client_id === client_id);
     }
 
-    public getEvents(): Event[] {
-        return this.events;
+    public getEvents(client_id: string): Event[] {
+        return this.events.filter((event) => event.client_id === client_id);
     }
 
-    public getCoupons(): Coupon[] {
-        return this.coupons;
+    public getCoupons(client_id: string): Coupon[] {
+        return this.coupons.filter((coupon) => coupon.client_id === client_id);
     }
 
-    public getUserById(userId: string): User | undefined {
-        return this.users.find((user) => user.user_id === userId);
+    public getUserById(user_id: string, client_id: string): User | undefined {
+        return this.users.find((user) => user.user_id === user_id && user.client_id === client_id);
     }
 
-    public getEventById(eventId: string): Event | undefined {
-        return this.events.find((event) => event.event_id === eventId);
+    public getEventById(event_id: string, client_id: string): Event | undefined {
+        return this.events.find((event) => event.event_id === event_id && event.client_id === client_id);
     }
 
-    public getCouponById(couponId: string): Coupon | undefined {
-        return this.coupons.find((coupon) => coupon.coupon_id === couponId);
+    public getCouponById(coupon_id: string, client_id: string): Coupon | undefined {
+        return this.coupons.find((coupon) => coupon.coupon_id === coupon_id && coupon.client_id === client_id);
     }
 
-    public getUserCoupons(userId: string): Coupon[] {
-        return this.coupons.filter((coupon) => coupon.user_id === userId);
+    public getUserCoupons(user_id: string, client_id: string): Coupon[] {
+        return this.coupons.filter((coupon) => coupon.user_id === user_id && coupon.client_id === client_id);
     }
 
-    public getEventCoupons(eventId: string): Coupon[] {
-        return this.coupons.filter((coupon) => coupon.selections.some((selection) => selection.event_id === eventId));
+    public getEventCoupons(event_id: string, client_id: string): Coupon[] {
+        return this.coupons.filter((coupon) => coupon.selections.some((selection) => selection.event_id === event_id) && coupon.client_id === client_id);
     }
 
     public insertUser(user: User): boolean {
-        if (this.getUserById(user.user_id)) {
+        if (this.getUserById(user.user_id, user.client_id)) {
             return false;
         }
 
@@ -71,7 +71,7 @@ export class FileStore extends Store {
     }
 
     public insertEvent(event: Event): boolean {
-        if (this.getEventById(event.event_id)) {
+        if (this.getEventById(event.event_id, event.client_id)) {
             return false;
         }
 
@@ -82,7 +82,7 @@ export class FileStore extends Store {
     }
 
     public insertCoupon(coupon: Coupon): boolean {
-        if (this.getCouponById(coupon.coupon_id)) {
+        if (this.getCouponById(coupon.coupon_id, coupon.client_id)) {
             return false;
         }
 

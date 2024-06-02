@@ -5,6 +5,7 @@ export interface User {
     gender: string;
     registration_date: string;
     user_id: string;
+    client_id: string;
 }
 
 export interface Event {
@@ -15,6 +16,7 @@ export interface Event {
     league: string;
     participants: string[];
     sport: string;
+    client_id: string;
 }
 
 export interface Coupon {
@@ -23,6 +25,7 @@ export interface Coupon {
     stake: number;
     timestamp: string;
     user_id: string;
+    client_id: string;
 }
 
 export interface Selection {

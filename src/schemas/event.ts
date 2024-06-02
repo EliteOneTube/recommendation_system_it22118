@@ -9,8 +9,9 @@ export const eventSchema: jsonschema.Schema = {
         event_id: { type: 'string' },
         league: { type: 'string' },
         participants: { type: 'array', items: { type: 'string' } },
-        sport: { type: 'string' }
+        sport: { type: 'string' },
+        client_id: { type: 'string' }
     },
-    required: ['begin_timestamp', 'country', 'end_timestamp', 'event_id', 'league', 'participants', 'sport'],
+    required: ['begin_timestamp', 'country', 'end_timestamp', 'event_id', 'league', 'participants', 'sport', 'client_id'],
     additionalProperties: false
 };

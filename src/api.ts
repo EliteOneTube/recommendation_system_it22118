@@ -106,25 +106,25 @@ export default class Api {
     }
 
     private async getRec(req: Request, res: Response): Promise<void> {
-        const user = await this.store.getUserById(req.params.user_id);
+        const user = await this.store.getUserById(req.params.user_id, req.query.client_id as string);
 
         if (!user) {
             res.status(404).send('User not found');
             return;
         }
 
-        const recommendations = await frequencyRecommend(req.params.user_id, this);
+        const recommendations = await frequencyRecommend(req.params.user_id, this, req.query.client_id as string);
 
         res.send(recommendations);
     }
 
     private async getRandomRec(req: Request, res: Response): Promise<void> {
-        const user = await this.store.getUsers();
+        const user = await this.store.getUsers(req.query.client_id as string);
 
         //calculate a random number between 0 and the number of users
         const random = Math.floor(Math.random() * user.length);
 
-        const recommendations = await frequencyRecommend(user[random].user_id, this);
+        const recommendations = await frequencyRecommend(user[random].user_id, this, user[random].client_id);
 
         res.send(recommendations);
     }
