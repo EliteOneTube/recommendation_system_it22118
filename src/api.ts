@@ -47,7 +47,7 @@ export default class Api {
 
         this.app.post('/coupon', this.asyncWrapper(this.createCoupon.bind(this)));
 
-        this.app.get('/user/:user_id', this.asyncWrapper(this.getRec.bind(this)));
+        this.app.get('/recommend', this.asyncWrapper(this.getRec.bind(this)));
 
         this.app.get('/ping', this.ping.bind(this));
 
@@ -106,14 +106,17 @@ export default class Api {
     }
 
     private async getRec(req: Request, res: Response): Promise<void> {
-        const user = await this.store.getUserById(req.params.user_id, req.query.client_id as string);
+        const user_id = req.query.user_id as string;
+        const client_id = req.query.client_id as string;
+
+        const user = await this.store.getUserById(user_id, client_id);
 
         if (!user) {
             res.status(404).send('User not found');
             return;
         }
 
-        const recommendations = await frequencyRecommend(req.params.user_id, this, req.query.client_id as string);
+        const recommendations = await frequencyRecommend(user_id, this, client_id);
 
         res.send(recommendations);
     }

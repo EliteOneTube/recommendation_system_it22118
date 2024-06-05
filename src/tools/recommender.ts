@@ -36,6 +36,10 @@ export async function frequencyRecommend(user_id: string, api: Api, client_id: s
 
     const mostFrequentLeague = await getMostFrequentItem('league', store, user_id, client_id);
 
+    if(!mostFrequentSport && !mostFrequentLeague){
+        return randomRecommend();
+    }
+
     const user_events_id = await getUserEventIds(user_id, store, client_id);
 
     //Get the events that match the most frequent sport and league that the user hasn't selected
@@ -49,6 +53,10 @@ export async function similaritiesRecommend(user_id: string, api: Api, client_id
     const store = api.getStore();
 
     const user_events_id = await getUserEventIds(user_id, store, client_id);
+
+    if(user_events_id.length === 0){
+        return randomRecommend();
+    }
 
     //Get other users that have selected the same sport or league
     const similarUsers = (await store.getUsers(client_id)).filter(async user => {

@@ -107,8 +107,8 @@ export const generateDummyData = (numUsers: number, numEvents: number, numCoupon
     return { users, events, coupons };
 };
 
-const sendDummyData = async (numUsers: number, numEvents: number, numCoupons: number) => {
-    const isRunning = await axios.get('http://localhost:3000/ping').then(() => {
+const sendDummyData = async (numUsers: number, numEvents: number, numCoupons: number, url: string) => {
+    const isRunning = await axios.get(url+'/ping').then(() => {
         console.log('Server is running, sending data...')
         return true;
     }).catch(() => {
@@ -123,7 +123,7 @@ const sendDummyData = async (numUsers: number, numEvents: number, numCoupons: nu
     
     //send data to server
     for(const user of dummyData.users){
-        axios.post('http://localhost:3000/user', user).catch((err) => {
+        axios.post(url+'/user', user).catch((err) => {
             console.log(err)
         });
     }
@@ -131,7 +131,7 @@ const sendDummyData = async (numUsers: number, numEvents: number, numCoupons: nu
     console.log('Sent ' + dummyData.users.length + ' users to server')
 
     for(const event of dummyData.events){
-        axios.post('http://localhost:3000/event', event).catch((err) => {
+        axios.post(url+'/event', event).catch((err) => {
             console.log(err)
         });
     }
@@ -139,7 +139,7 @@ const sendDummyData = async (numUsers: number, numEvents: number, numCoupons: nu
     console.log('Sent ' + dummyData.events.length + ' events to server')
 
     for(const coupon of dummyData.coupons){
-        axios.post('http://localhost:3000/coupon', coupon).catch((err) => {
+        axios.post(url+'/coupon', coupon).catch((err) => {
             console.log(err)
         });
     }
@@ -147,10 +147,13 @@ const sendDummyData = async (numUsers: number, numEvents: number, numCoupons: nu
     console.log('Sent ' + dummyData.coupons.length + ' coupons to server')
 };
 
+const url = process.argv[2] ?? 'http://localhost:8080'
+const amount = Number(process.argv[3]) ?? 1000
+
 console.log('Starting dummy data generator in 5 seconds...')
 
 // setInterval(() => {
 //     void sendDummyData(1000, 1000, 1000)
 // }, 5000);
 
-void sendDummyData(1000, 1000, 1000)
+void sendDummyData(amount, amount, amount, url)
