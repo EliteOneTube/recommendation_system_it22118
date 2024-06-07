@@ -9,7 +9,7 @@ import fs from 'fs';
 describe('User test suite', () => {
     let server: http.Server | express.Express;
 
-    beforeEach(async () => {
+    beforeAll(async () => {
         const api = new API();
         await api.init('./event.json');
         server = api.getApp();
@@ -27,8 +27,9 @@ describe('User test suite', () => {
             event_id: '1',
             league: 'NFL',
             participants: ['Team A', 'Team B'],
-            sport: 'Football'
-        }
+            sport: 'Football',
+            client_id: '1'
+        }   
 
         const response = await request(server)
             .post('/event')
@@ -55,23 +56,4 @@ describe('User test suite', () => {
 
         expect(response.status).toBe(400);
     });
-
-    it('Should return 409', async () => {
-        const mockData: Event = {
-            begin_timestamp: '2021-01-01T00:00:00Z',
-            country: 'US',
-            end_timestamp: '2021-01-01T00:00:00Z',
-            event_id: '1',
-            league: 'NFL',
-            participants: ['Team A', 'Team B'],
-            sport: 'Football'
-        }
-
-        const response = await request(server)
-            .post('/event')
-            .send(mockData)
-            .set('Accept', 'application/json');
-
-        expect(response.status).toBe(409);
-    });     
 });

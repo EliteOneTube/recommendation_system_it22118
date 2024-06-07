@@ -11,7 +11,8 @@ describe('Validator', () => {
       currency: 'USD',
       gender: 'M',
       registration_date: '2021-01-01',
-      user_id: '1234'
+      user_id: '1234',
+      client_id: '1'
     };
 
     const validated = validator('user', user);
@@ -26,7 +27,8 @@ describe('Validator', () => {
       gender: 'M',
       registration_date: '2021-01-01',
       user_id: '1234',
-      invalid_field: 'invalid'
+      invalid_field: 'invalid',
+      client_id: '1'
     };
 
     const validated = validator('user', user as User);
@@ -41,7 +43,8 @@ describe('Validator', () => {
       event_id: '1234',
       league: 'NFL',
       participants: ['Team A', 'Team B'],
-      sport: 'Football'
+      sport: 'Football',
+      client_id: '1'
     };
 
     const validated = validator('event', event);
@@ -57,10 +60,11 @@ describe('Validator', () => {
       league: 'NFL',
       participants: ['Team A', 'Team B'],
       sport: 'Football',
-      invalid_field: 'invalid'
+      invalid_field: 'invalid',
+      client_id: '1'
     };
 
-    const validated = validator('event', event as Event);
+    const validated = validator('event', event);
     expect(validated.valid).toBe(false);
   });
 
@@ -75,7 +79,8 @@ describe('Validator', () => {
       ],
       stake: 10,
       timestamp: '2021-01-01T00:00:00Z',
-      user_id: '1234'
+      user_id: '1234',
+      client_id: '1'
     };
 
     const validated = validator('coupon', coupon);
@@ -94,7 +99,8 @@ describe('Validator', () => {
       stake: 10,
       timestamp: '2021-01-01T00:00:00Z',
       user_id: '1234',
-      invalid_field: 'invalid'
+      invalid_field: 'invalid',
+      client_id: '1'
     };
 
     const validated = validator('coupon', coupon as Coupon);

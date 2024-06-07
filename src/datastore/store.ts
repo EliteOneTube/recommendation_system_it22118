@@ -1,7 +1,7 @@
 import { Coupon, User, Event } from "../types/datastore";
 
 export abstract class Store {
-    public abstract initialize(path: string): void;
+    public abstract initialize(path: string): void | Promise<void>;
     public abstract getUsers(client_id: string): User[] | Promise<User[]>;
     public abstract getEvents(client_id: string): Event[] | Promise<Event[]>;
     public abstract getCoupons(client_id: string): Coupon[] | Promise<Coupon[]>;

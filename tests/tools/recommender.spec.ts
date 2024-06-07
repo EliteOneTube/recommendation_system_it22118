@@ -1,7 +1,7 @@
 import { describe, expect, it } from '@jest/globals';
-import { randomRecommend, frequencyRecommend } from '../../src/tools/recommender';
+import { randomRecommend, frequencyRecommend, similaritiesRecommend } from '../../src/tools/recommender';
 import { FileStore } from '../../src/datastore/filestore';
-import {generateDummyData} from '../../generator/generator';
+import { generateDummyData } from '../../generator/generator';
 import { User } from '../../src/types/datastore';
 import fs from 'fs';
 
@@ -28,21 +28,28 @@ describe('Frequency Recommender', () => {
         fs.unlinkSync('./test.json');
     });
 
-    it('Should return a list of recommendations based on activity', () => {
+    it('Should return a list of recommendations based on activity', async () => {
         const filestore = new FileStore();
         filestore.initialize('./test.json');
-        if (filestore.getUsers().length < 1) {
+        if (filestore.getUsers('1').length < 1) {
             filestore.writeData(generateDummyData(10, 20, 30));
         }
-        const users = filestore.getUsers()
+        const users = filestore.getUsers('1')
 
-        const randomUser = users[0];
+        let randomUser = users[0];
 
-        const recommendations = frequencyRecommend(randomUser.user_id, filestore);
+        for (let i = 0; i < 10; i++) {
+            if (users[i].user_id) {
+                randomUser = users[i];
+                break;
+            }
+        }
+
+        const recommendations = await frequencyRecommend(randomUser.user_id, '1', null, filestore);
         expect(recommendations.length).toBeGreaterThan(0);
     });
 
-    it('Should return a list of random recommendations if user has no activity', () => {
+    it('Should return a list of random recommendations if user has no activity', async () => {
         const filestore = new FileStore();
         filestore.initialize('./test.json');
 
@@ -52,12 +59,40 @@ describe('Frequency Recommender', () => {
             currency: 'USD',
             gender: 'M',
             registration_date: '2021-01-01',
-            user_id: 'user1'
+            user_id: 'user1',
+            client_id: '1'
         }
 
         filestore.insertUser(user1)
 
-        const recommendations = frequencyRecommend('1234', filestore);
+        const recommendations = await frequencyRecommend('1234', '1', null, filestore);
+        expect(recommendations.length).toBeGreaterThan(0);
+    });
+});
+
+describe('Similarity Recommender', () => {
+    afterAll(() => {
+        fs.unlinkSync('./test.json');
+    });
+
+    it('Should return a list of recommendations based on activity', async () => {
+        const filestore = new FileStore();
+        filestore.initialize('./test.json');
+        if (filestore.getUsers('1').length < 1) {
+            filestore.writeData(generateDummyData(10, 20, 30));
+        }
+        const users = filestore.getUsers('1')
+
+        let randomUser = users[0];
+
+        for (let i = 0; i < 10; i++) {
+            if (users[i].user_id) {
+                randomUser = users[i];
+                break;
+            }
+        }
+
+        const recommendations = await similaritiesRecommend(randomUser.user_id, '1', null, filestore);
         expect(recommendations.length).toBeGreaterThan(0);
     });
 });

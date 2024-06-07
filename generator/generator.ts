@@ -10,16 +10,16 @@ const leagues = {
 }
 
 const client_ids = [
-    "client_id_1",
-    "client_id_2",
-    "client_id_3",
-    "client_id_4",
-    "client_id_5",
-    "client_id_6",
-    "client_id_7",
-    "client_id_8",
-    "client_id_9",
-    "client_id_10"
+    "1",
+    "2",
+    "3",
+    "4",
+    "5",
+    "6",
+    "7",
+    "8",
+    "9",
+    "10"
 ]
 
 // Function to generate a random user
@@ -151,9 +151,5 @@ const url = process.argv[2] ?? 'http://localhost:8080'
 const amount = Number(process.argv[3]) ?? 1000
 
 console.log('Starting dummy data generator in 5 seconds...')
-
-// setInterval(() => {
-//     void sendDummyData(1000, 1000, 1000)
-// }, 5000);
 
 void sendDummyData(amount, amount, amount, url)

@@ -6,7 +6,7 @@ import express from 'express';
 import fs from 'fs';
 import { User } from '../../src/types/datastore';
 
-describe('Recommendation test suite', () => {
+describe('Random recommendation test suite', () => {
     let server: http.Server | express.Express;
 
     beforeAll(async () => {
@@ -31,16 +31,14 @@ describe('Recommendation test suite', () => {
         }
 
         await request(server).post('/user').send(mockData).set('Accept', 'application/json');
-            
+
         const query = {
-            user_id: '1',
             client_id: '1'
         }
-        
-        const response = await request(server)
-            .get('/recommend/')
-            .query(query)
-            .set('Accept', 'application/json');
+
+        const response = await request(server).get('/random/')
+        .query(query)
+        .set('Accept', 'application/json');
 
         expect(response.status).toBe(200);
     });

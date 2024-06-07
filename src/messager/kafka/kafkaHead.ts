@@ -2,8 +2,8 @@ import { Admin, Kafka, logLevel } from "kafkajs";
 import { kafkaLogger, logger  } from "../../tools/logger";
 import KafkaProducer from "./kafkaProducer";
 import { KafkaConsumer } from "./kafkaConsumer";
-import { FileStore } from "src/datastore/filestore";
 import MongoStore from "src/datastore/mongostore";
+import { Store } from "src/datastore/store";
 
 export default class KafkaHead {
     private kafka: Kafka;
@@ -18,9 +18,9 @@ export default class KafkaHead {
 
     private kafkaAdmin: Admin;
 
-    private store: MongoStore | FileStore;
+    private store: MongoStore | Store;
 
-    constructor(store: MongoStore | FileStore) {
+    constructor(store: MongoStore | Store) {
         try {
             this.kafka = new Kafka({
                 brokers: [process.env.KAFKA_URL],

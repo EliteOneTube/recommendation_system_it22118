@@ -7,35 +7,44 @@ import { logger } from './tools/logger';
 import MongoStore from './datastore/mongostore';
 import asyncify from 'express-asyncify';
 import { FileStore } from './datastore/filestore';
+import { Store } from './datastore/store';
 
 export default class Api {
     private app: express.Express;
 
-    private store: MongoStore | FileStore;
+    private store: Store;
 
     private kafkaHead: KafkaHead;
 
-    private fallbackStore: FileStore;
+    private FileStore: FileStore;
+
+    private MongoStore: MongoStore;
 
     constructor() {
         this.app = asyncify(express());
-        this.store = new MongoStore();
+        this.MongoStore = new MongoStore();
         this.kafkaHead = new KafkaHead(this.store);
-        this.fallbackStore = new FileStore();
+        this.FileStore = new FileStore();
     }
 
     public async init(storePath: string) {
         this.app.use(express.json());
 
-        if (!storePath) {
+        if (!storePath || !storePath.includes('mongo')) {
             logger.warn('This is not recommended for production use');
-            this.fallbackStore.initialize('data.json');
-            this.store = this.fallbackStore;
+            if(!storePath) storePath = 'data.json';
+
+            this.FileStore.initialize(storePath);
+
+            this.store = this.FileStore;
         } else {
+            this.store = this.MongoStore;
             await this.store.initialize(storePath);
         }
-
-        await this.kafkaHead.init();
+        
+        if (process.env.KAFKA_URL) {
+            await this.kafkaHead.init();
+        }
 
         this.registerEndpoints();
     }
@@ -66,7 +75,11 @@ export default class Api {
 
         const user = req.body as User;
 
-        await this.kafkaHead.returnProducer('user').produce('user', JSON.stringify(user));
+        if(this.kafkaHead.returnConsumer('user')) {
+            await this.kafkaHead.returnProducer('user').produce('user', JSON.stringify(user));
+        } else {
+            await this.store.insertUser(user);
+        }
 
         res.send('POST request received at /user');
     }
@@ -83,7 +96,11 @@ export default class Api {
 
         const event = req.body as Event;
 
-        await this.kafkaHead.returnProducer('event').produce('event', JSON.stringify(event));
+        if(this.kafkaHead.returnConsumer('event')) {
+            await this.kafkaHead.returnProducer('event').produce('event', JSON.stringify(event));
+        } else {
+            await this.store.insertEvent(event);
+        }
 
         res.send('POST request received at /event');
     }
@@ -100,7 +117,11 @@ export default class Api {
 
         const coupon = req.body as Coupon;
 
-        await this.kafkaHead.returnProducer('coupon').produce('coupon', JSON.stringify(coupon));
+        if(this.kafkaHead.returnConsumer('coupon')) {
+            await this.kafkaHead.returnProducer('coupon').produce('coupon', JSON.stringify(coupon));
+        } else {
+            await this.store.insertCoupon(coupon);
+        }
 
         res.send('POST request received at /coupon');
     }
@@ -116,7 +137,7 @@ export default class Api {
             return;
         }
 
-        const recommendations = await frequencyRecommend(user_id, this, client_id);
+        const recommendations = await frequencyRecommend(user_id, client_id, this);
 
         res.send(recommendations);
     }
@@ -124,10 +145,12 @@ export default class Api {
     private async getRandomRec(req: Request, res: Response): Promise<void> {
         const user = await this.store.getUsers(req.query.client_id as string);
 
+        const client_id = req.query.client_id as string;
+
         //calculate a random number between 0 and the number of users
         const random = Math.floor(Math.random() * user.length);
 
-        const recommendations = await frequencyRecommend(user[random].user_id, this, user[random].client_id);
+        const recommendations = await frequencyRecommend(user[random].user_id, client_id, this);
 
         res.send(recommendations);
     }

@@ -2,15 +2,15 @@ import { AbstractConsumer } from "../consumer";
 import { Consumer, EachMessagePayload,  KafkaMessage} from "kafkajs";
 import KafkaHead from "./kafkaHead";
 import MongoStore from "src/datastore/mongostore";
-import { FileStore } from "src/datastore/filestore";
 import { User, Event, Coupon } from "src/types/datastore";
+import { Store } from "src/datastore/store";
 
 export class KafkaConsumer extends AbstractConsumer {
     private consumer: Consumer;
 
-    private store: MongoStore | FileStore;
+    private store: MongoStore | Store;
 
-    constructor(kafkaHead: KafkaHead, store: MongoStore | FileStore, group: string) {
+    constructor(kafkaHead: KafkaHead, store: MongoStore | Store, group: string) {
         super();
         this.consumer = kafkaHead.getConsumer(group);
         this.store = store;

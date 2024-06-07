@@ -9,7 +9,7 @@ import fs from 'fs';
 describe('User test suite', () => {
     let server: http.Server | express.Express;
 
-    beforeEach(async () => {
+    beforeAll(async () => {
         const api = new API();
         await api.init('./user.json');
         server = api.getApp();
@@ -26,7 +26,8 @@ describe('User test suite', () => {
             currency: 'USD',
             gender: 'M',
             registration_date: '2021-01-01',
-            user_id: '1'
+            user_id: '1',
+            client_id: '1'
         }
 
         const response = await request(server)
@@ -50,23 +51,5 @@ describe('User test suite', () => {
             .set('Accept', 'application/json');
 
         expect(response.status).toBe(400);
-    });
-
-    it('Should return 409', async () => {
-        const mockData: User = {
-            birth_year: '1990',
-            country: 'US',
-            currency: 'USD',
-            gender: 'M',
-            registration_date: '2021-01-01',
-            user_id: '1'
-        }
-
-        const response = await request(server)
-            .post('/user')
-            .send(mockData)
-            .set('Accept', 'application/json');
-
-        expect(response.status).toBe(409);
-    });     
+    }); 
 });

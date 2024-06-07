@@ -3,6 +3,7 @@ import { Event } from '../types/datastore';
 import { getAllEventIds, mostFrequent } from './utils';
 import Api from 'src/api';
 import { Store } from 'src/datastore/store';
+import { FileStore } from 'src/datastore/filestore';
 
 export function randomRecommend(): Event[] {    
     return [
@@ -29,8 +30,8 @@ export function randomRecommend(): Event[] {
     ];
 }
 
-export async function frequencyRecommend(user_id: string, api: Api, client_id: string): Promise<Event[]> {
-    const store = api.getStore();
+export async function frequencyRecommend(user_id: string, client_id: string, api?: Api, testStore?: FileStore | MongoStore): Promise<Event[]> {
+    const store = testStore ?? api.getStore();
 
     const mostFrequentSport = await getMostFrequentItem('sport', store, user_id, client_id);
 
@@ -49,8 +50,8 @@ export async function frequencyRecommend(user_id: string, api: Api, client_id: s
     return recommendedEvents;
 }
 
-export async function similaritiesRecommend(user_id: string, api: Api, client_id: string): Promise<Event[]> {
-    const store = api.getStore();
+export async function similaritiesRecommend(user_id: string, client_id: string, api?: Api, testStore?: FileStore | MongoStore): Promise<Event[]> {
+    const store = testStore ?? api.getStore();
 
     const user_events_id = await getUserEventIds(user_id, store, client_id);
 
