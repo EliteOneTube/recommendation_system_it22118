@@ -13,6 +13,9 @@ This project builds a recommendation system that leverages real-time data proces
 
 - Kafka Producers: The API translates the data into messages and sends them to specific topics within Apache Kafka, a distributed streaming platform.
 
+### Diagram of the System Architecture:
+![System Architecture](diagrams/Recommendation%20System.png)
+
 ### Data Processing with Kafka and MongoDB:
 
 - Apache Kafka: Kafka acts as a high-throughput, low-latency messaging queue. It efficiently handles the large volume of data streams from clients, ensuring scalability and real-time processing.

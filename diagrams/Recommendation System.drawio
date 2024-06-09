@@ -1,0 +1,81 @@
+<mxfile host="app.diagrams.net" modified="2024-06-09T13:09:15.410Z" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36" etag="TOTgOUtivj89Kvk_aRcq" version="24.5.2" type="device">
+  <diagram name="Page-1" id="XK1s7Ra4bfa6KtWziG6u">
+    <mxGraphModel dx="2901" dy="2275" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="2" value="KafkaConsumers" style="whiteSpace=wrap;strokeWidth=2;verticalAlign=top;" parent="1" vertex="1">
+          <mxGeometry x="795" y="13" width="131" height="151" as="geometry" />
+        </mxCell>
+        <mxCell id="3" value="Database" style="ellipse;aspect=fixed;strokeWidth=2;whiteSpace=wrap;" parent="1" vertex="1">
+          <mxGeometry x="820" y="48" width="81" height="81" as="geometry" />
+        </mxCell>
+        <mxCell id="4" value="KafkaProducers" style="whiteSpace=wrap;strokeWidth=2;verticalAlign=top;" parent="1" vertex="1">
+          <mxGeometry x="473" width="156" height="176" as="geometry" />
+        </mxCell>
+        <mxCell id="5" value="Kafka Queue" style="ellipse;aspect=fixed;strokeWidth=2;whiteSpace=wrap;" parent="1" vertex="1">
+          <mxGeometry x="498" y="35" width="106" height="106" as="geometry" />
+        </mxCell>
+        <mxCell id="6" value="Clients" style="whiteSpace=wrap;strokeWidth=2;verticalAlign=top;" parent="1" vertex="1">
+          <mxGeometry y="10" width="314" height="155" as="geometry" />
+        </mxCell>
+        <mxCell id="7" value="Endpoints" style="ellipse;aspect=fixed;strokeWidth=2;whiteSpace=wrap;" parent="1" vertex="1">
+          <mxGeometry x="203" y="45" width="85" height="85" as="geometry" />
+        </mxCell>
+        <mxCell id="8" value="Data" style="whiteSpace=wrap;strokeWidth=2;" parent="1" vertex="1">
+          <mxGeometry x="25" y="71" width="49" height="34" as="geometry" />
+        </mxCell>
+        <mxCell id="9" value="HTTP POST" style="curved=1;startArrow=none;endArrow=block;exitX=0.9910714285714286;exitY=0.4978170955882353;entryX=0.005422794117647059;entryY=0.5050091911764706;" parent="1" source="8" target="7" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="10" value="Kafka Producer" style="curved=1;startArrow=none;endArrow=block;exitX=1.0098345588235293;exitY=0.5050091911764706;entryX=-0.0005159198113207547;entryY=0.49929982311320753;" parent="1" source="7" target="5" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="11" value="Kafka Consumer" style="curved=1;startArrow=none;endArrow=block;exitX=0.9980837264150944;exitY=0.49929982311320753;entryX=-0.0030864197530864196;entryY=0.49291087962962965;" parent="1" source="5" target="3" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="Jec9cW9p4EP5mBro0YCw-11" value="Clients" style="whiteSpace=wrap;strokeWidth=2;verticalAlign=top;" vertex="1" parent="1">
+          <mxGeometry y="240" width="314" height="155" as="geometry" />
+        </mxCell>
+        <mxCell id="Jec9cW9p4EP5mBro0YCw-18" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="Jec9cW9p4EP5mBro0YCw-12" target="Jec9cW9p4EP5mBro0YCw-17">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="Jec9cW9p4EP5mBro0YCw-12" value="Recommendation&#xa;Endpoint" style="ellipse;aspect=fixed;strokeWidth=2;whiteSpace=wrap;" vertex="1" parent="1">
+          <mxGeometry x="180" y="270" width="108" height="108" as="geometry" />
+        </mxCell>
+        <mxCell id="Jec9cW9p4EP5mBro0YCw-14" value="HTTP GET" style="curved=1;startArrow=none;endArrow=block;exitX=0.9910714285714286;exitY=0.4978170955882353;entryX=0.005422794117647059;entryY=0.5050091911764706;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points" />
+            <mxPoint x="74" y="328.9644318181818" as="sourcePoint" />
+            <mxPoint x="179.9999999999984" y="325.04" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="Jec9cW9p4EP5mBro0YCw-17" value="Recommendation&#xa;Algorithm" style="ellipse;aspect=fixed;strokeWidth=2;whiteSpace=wrap;" vertex="1" parent="1">
+          <mxGeometry x="480" y="270" width="108" height="108" as="geometry" />
+        </mxCell>
+        <mxCell id="Jec9cW9p4EP5mBro0YCw-19" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.468;entryY=0.994;entryDx=0;entryDy=0;entryPerimeter=0;" edge="1" parent="1" source="Jec9cW9p4EP5mBro0YCw-17" target="Jec9cW9p4EP5mBro0YCw-11">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="534" y="450" />
+              <mxPoint x="147" y="450" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="Jec9cW9p4EP5mBro0YCw-22" value="Recommendation for Specific User" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="Jec9cW9p4EP5mBro0YCw-19">
+          <mxGeometry x="-0.0523" y="3" relative="1" as="geometry">
+            <mxPoint y="-3" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="Jec9cW9p4EP5mBro0YCw-23" value="User Id" style="whiteSpace=wrap;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="25" y="310" width="49" height="34" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
